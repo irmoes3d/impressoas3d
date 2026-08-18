@@ -1,37 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 2 Irmãos Impressões 3D
 
-## Getting Started
+Site completo (loja, personalização, orçamentos, acompanhamento de pedido e painel
+administrativo) para uma marca fictícia de impressão 3D. Next.js 16 (App Router) +
+TypeScript + Tailwind CSS v4, com integração real ao Supabase (auth, banco e storage) e
+fallback automático para dados fictícios locais enquanto o banco não estiver provisionado.
 
-First, run the development server:
+## Como rodar
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Conectar o Supabase (dados reais)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+O projeto já está preparado para usar um banco Supabase real. Enquanto isso não é feito,
+o site funciona normalmente com os dados fictícios de `lib/data/*`.
 
-## Learn More
+1. Copie `.env.local.example` para `.env.local` e preencha com as credenciais do seu
+   projeto (Project Settings → API): `NEXT_PUBLIC_SUPABASE_URL`,
+   `NEXT_PUBLIC_SUPABASE_ANON_KEY` e `SUPABASE_SERVICE_ROLE_KEY` (esta última é secreta —
+   nunca a exponha no navegador nem a versione).
+2. Abra o **SQL Editor** do seu projeto Supabase, cole o conteúdo de
+   `supabase/schema.sql` e rode. Isso cria todas as tabelas, enums, policies de RLS,
+   trigger de criação de perfil e os buckets de storage (`product-images` público e
+   `quote-files` privado).
+3. Popule com os mesmos dados fictícios da demonstração:
+   ```bash
+   npm run seed
+   ```
+   O script cria categorias, produtos, impressoras, materiais, cupons e um usuário
+   administrador de demonstração (`admin@2irmaosimpressoes3d.com.br` /
+   `Admin@2Irmaos` — troque a senha depois de testar).
 
-To learn more about Next.js, take a look at the following resources:
+A partir daí, catálogo, autenticação de clientes, pedidos, avaliações e orçamentos
+personalizados passam a gravar e ler do banco real automaticamente — nenhuma página
+precisa ser alterada (veja `lib/repo/products.ts` para o padrão "tenta Supabase, cai para
+mock" usado em toda a camada de dados).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Painel administrativo
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Acesse `/admin`. Sem um usuário com `role = admin/funcionario` no Supabase, use o botão
+**"Entrar em modo demonstração"** na tela de login do painel para explorar a interface
+sem depender do banco.
 
-## Deploy on Vercel
+## Estrutura
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+app/                 rotas (App Router) — loja, checkout, conta, admin
+components/          UI reutilizável (loja, produto, admin, marca)
+lib/
+  data/              dados fictícios (produtos, categorias, pedidos, clientes...)
+  repo/              camada de acesso a dados com fallback Supabase → mock
+  supabase/          clientes Supabase (browser, server, admin/service-role)
+  context/           carrinho, favoritos e autenticação (React Context)
+  actions/           Server Actions (orçamento personalizado)
+supabase/schema.sql  schema completo do banco (tabelas, enums, RLS, storage)
+scripts/seed.ts      popula o Supabase com os dados fictícios
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# impressoas3d
+## Pontos de integração pendentes
+
+Preparados na interface e na estrutura de dados, mas exigem credenciais reais para
+funcionar de ponta a ponta:
+
+- **Pagamentos** — PIX e cartão no checkout (`app/checkout/page.tsx`) geram uma tela
+  pronta (inclusive QR/código copia-e-cola de demonstração), mas precisam de um
+  provedor real (ex: Mercado Pago) para processar pagamentos de verdade.
+- **Frete** — `lib/shipping.ts` simula PAC/SEDEX/transportadora por região; troque pela
+  API dos Correios ou do Melhor Envio mantendo a mesma assinatura de retorno.
+- **WhatsApp** — os links `wa.me` já funcionam; troque o número em
+  `NEXT_PUBLIC_WHATSAPP_NUMBER` (`.env.local`) ou na tela `/admin/configuracoes`.
+- **CEP** — já usa a API pública e gratuita do ViaCEP no checkout (integração real, sem
+  necessidade de chave).
+
+## Segurança
+
+- `SUPABASE_SERVICE_ROLE_KEY` só é usada em `lib/supabase/admin.ts` (marcado
+  `server-only`) e em `scripts/seed.ts` — nunca em componentes client.
+- RLS habilitado em todas as tabelas (`supabase/schema.sql`), com papéis
+  `admin` / `funcionario` / `cliente` controlados pela tabela `profiles`.
+- Arquivos enviados em orçamentos personalizados vão para o bucket privado
+  `quote-files`, com acesso restrito ao dono do arquivo e à equipe.

@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 
 // Mantém a sessão Supabase (cookies) atualizada a cada request, conforme o
 // padrão recomendado do @supabase/ssr para o App Router.
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
