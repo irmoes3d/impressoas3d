@@ -9,7 +9,7 @@ export function Footer() {
     <footer className="border-t border-graphite-100 bg-graphite-900 text-white">
       <div className="container-page grid gap-10 py-14 lg:grid-cols-[1.3fr_1fr_1fr_1.1fr]">
         <div>
-          <Logo monochrome className="text-white [&_span]:text-white" href={null} />
+          <Logo href={null} size={76} />
           <p className="mt-4 max-w-xs text-sm text-white/60">Sua ideia ganha forma.</p>
           <div className="mt-5 flex gap-3">
             <a

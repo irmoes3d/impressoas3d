@@ -56,7 +56,7 @@ export function AdminGate({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-graphite-900 px-4 py-10">
       <div className="w-full max-w-sm rounded-3xl bg-white p-8 shadow-2xl">
-        <Logo href={null} className="mx-auto mb-6" variant="stacked" />
+        <Logo href={null} className="mx-auto mb-6 flex justify-center" size={128} />
         <p className="mb-6 text-center text-xs font-semibold uppercase tracking-wide text-graphite-400">
           Painel administrativo
         </p>

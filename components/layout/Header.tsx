@@ -36,7 +36,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-graphite-100 bg-white/95 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Logo />
+        <Logo size={44} priority />
 
         <nav className="hidden items-center gap-6 lg:flex">
           {NAV.map((item) => (
@@ -130,7 +130,7 @@ export function Header() {
           <div className="absolute inset-0 bg-ink/40" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-0 flex h-full w-[82%] max-w-sm flex-col gap-1 bg-white p-5 shadow-2xl animate-fade-up">
             <div className="mb-4 flex items-center justify-between">
-              <Logo />
+              <Logo size={40} />
               <button aria-label="Fechar menu" onClick={() => setOpen(false)} className="rounded-full p-2 hover:bg-graphite-100">
                 <X size={20} />
               </button>

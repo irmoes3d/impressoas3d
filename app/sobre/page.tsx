@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DuckMascot } from "@/components/brand/DuckMascot";
+import { Logo } from "@/components/brand/Logo";
 import { ProductPlaceholder } from "@/components/media/ProductPlaceholder";
 import { Camera, Printer, Ruler, Sparkles } from "lucide-react";
 
@@ -31,10 +31,7 @@ export default function SobrePage() {
           </p>
         </div>
         <div className="flex items-center justify-center rounded-[2rem] bg-graphite-900 p-10">
-          <div className="flex gap-2">
-            <DuckMascot variant="criativo" className="h-32 w-32 sm:h-44 sm:w-44" />
-            <DuckMascot variant="tecnico" facing="left" className="h-32 w-32 sm:h-44 sm:w-44" />
-          </div>
+          <Logo href={null} size={240} />
         </div>
       </section>
 

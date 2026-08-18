@@ -32,7 +32,7 @@ export function AdminSidebar({ onNavigate, onExit }: { onNavigate?: () => void; 
   return (
     <div className="flex h-full flex-col bg-graphite-900 text-white">
       <div className="flex items-center justify-between px-5 py-5">
-        <Logo monochrome className="text-white" href="/admin" />
+        <Logo href="/admin" size={38} />
         <button onClick={onNavigate} className="rounded-full p-1.5 hover:bg-white/10 lg:hidden" aria-label="Fechar menu">
           <X size={18} />
         </button>

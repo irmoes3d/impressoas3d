@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, LogIn, UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/context/AuthContext";
-import { DuckMascot } from "@/components/brand/DuckMascot";
+import { Logo } from "@/components/brand/Logo";
 
 export function AuthForms() {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -40,9 +40,8 @@ export function AuthForms() {
   return (
     <div className="container-page grid gap-10 py-14 lg:grid-cols-2 lg:items-center">
       <div className="hidden justify-center lg:flex">
-        <div className="flex gap-1 rounded-[2rem] bg-graphite-900 p-10">
-          <DuckMascot variant="criativo" className="h-32 w-32" />
-          <DuckMascot variant="tecnico" facing="left" className="h-32 w-32" />
+        <div className="flex items-center justify-center rounded-[2rem] bg-graphite-900 p-10">
+          <Logo href={null} size={220} />
         </div>
       </div>
 

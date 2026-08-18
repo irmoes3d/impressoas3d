@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Wand2 } from "lucide-react";
-import { DuckMascot } from "@/components/brand/DuckMascot";
+import { Logo } from "@/components/brand/Logo";
 
 export function Hero() {
   return (
@@ -58,9 +58,8 @@ export function Hero() {
                 }}
               />
             ))}
-            <div className="relative flex gap-2">
-              <DuckMascot variant="criativo" className="h-28 w-28 drop-shadow-xl sm:h-36 sm:w-36" />
-              <DuckMascot variant="tecnico" facing="left" className="h-28 w-28 drop-shadow-xl sm:h-36 sm:w-36" />
+            <div className="relative drop-shadow-2xl">
+              <Logo href={null} size={200} />
             </div>
           </div>
         </div>
