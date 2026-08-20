@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BarChart3, Boxes, FileText, Kanban, LayoutDashboard, LogOut, Package, Settings,
-  ShoppingBag, Sparkles, Star, Tags, Ticket, Truck, Users, Wallet, X,
+  ShoppingBag, Sparkles, Star, Tags, Ticket, Truck, UserCog, Users, Wallet, X,
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 
@@ -23,6 +23,7 @@ const NAV = [
   { href: "/admin/fretes", label: "Fretes", icon: Truck },
   { href: "/admin/financeiro", label: "Financeiro", icon: Wallet },
   { href: "/admin/relatorios", label: "Relatórios", icon: BarChart3 },
+  { href: "/admin/equipe", label: "Equipe", icon: UserCog },
   { href: "/admin/configuracoes", label: "Configurações", icon: Settings },
 ];
 

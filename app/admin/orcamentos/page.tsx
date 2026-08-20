@@ -14,15 +14,20 @@ const STATUS_LABEL: Record<QuoteStatus, string> = {
 const STATUS_TONE: Record<QuoteStatus, "neutral" | "warn" | "info" | "ok" | "danger"> = {
   novo: "neutral", em_analise: "warn", orcamento_enviado: "info", aprovado: "ok", recusado: "danger",
 };
+const OPEN_STATUSES: QuoteStatus[] = ["novo", "em_analise", "orcamento_enviado"];
+
+type QuoteFilter = "abertos" | "todos";
 
 export default function AdminOrcamentosPage() {
   const seedList = useAllQuotes();
   const [quotes, setQuotes] = useState<CustomQuote[]>([]);
   const [selected, setSelected] = useState<CustomQuote | null>(null);
+  const [filter, setFilter] = useState<QuoteFilter>("abertos");
 
   useEffect(() => setQuotes(seedList), [seedList]);
 
-  const list = quotes;
+  const openCount = quotes.filter((q) => OPEN_STATUSES.includes(q.status)).length;
+  const list = filter === "abertos" ? quotes.filter((q) => OPEN_STATUSES.includes(q.status)) : quotes;
 
   function updateQuote(id: string, patch: Partial<CustomQuote>) {
     setQuotes((prev) => prev.map((q) => (q.id === id ? { ...q, ...patch } : q)));
@@ -31,9 +36,29 @@ export default function AdminOrcamentosPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="font-display text-2xl font-bold text-ink">Orçamentos</h1>
-        <p className="text-sm text-graphite-400">Solicitações de projetos personalizados e propostas em andamento.</p>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-bold text-ink">Orçamentos</h1>
+          <p className="text-sm text-graphite-400">Solicitações de projetos personalizados e propostas em andamento.</p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setFilter("abertos")}
+            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+              filter === "abertos" ? "bg-ink text-white" : "bg-graphite-100 text-graphite-500 hover:bg-graphite-200"
+            }`}
+          >
+            Em aberto ({openCount})
+          </button>
+          <button
+            onClick={() => setFilter("todos")}
+            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+              filter === "todos" ? "bg-ink text-white" : "bg-graphite-100 text-graphite-500 hover:bg-graphite-200"
+            }`}
+          >
+            Todos ({quotes.length})
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-3">

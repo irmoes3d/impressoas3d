@@ -1,10 +1,18 @@
+"use client";
+
 import Link from "next/link";
 import { Camera, Mail, MessageCircle } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
+import { useStoreSettings } from "@/lib/hooks/useStoreSettings";
+import { buildWhatsappLink, WHATSAPP_MESSAGES } from "@/lib/whatsapp";
 
 const PAYMENT_METHODS = ["Pix", "Visa", "Mastercard", "Elo", "Boleto"];
 
 export function Footer() {
+  const settings = useStoreSettings();
+  const instagramHandle = settings.instagram.replace(/^@/, "");
+  const whatsappDisplay = settings.whatsapp.replace(/^55/, "").replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+
   return (
     <footer className="border-t border-graphite-100 bg-graphite-900 text-white">
       <div className="container-page grid gap-10 py-14 lg:grid-cols-[1.3fr_1fr_1fr_1.1fr]">
@@ -13,7 +21,7 @@ export function Footer() {
           <p className="mt-4 max-w-xs text-sm text-white/60">Sua ideia ganha forma.</p>
           <div className="mt-5 flex gap-3">
             <a
-              href="https://instagram.com"
+              href={`https://instagram.com/${instagramHandle}`}
               target="_blank"
               rel="noreferrer"
               aria-label="Instagram"
@@ -22,14 +30,14 @@ export function Footer() {
               <Camera size={17} />
             </a>
             <a
-              href="mailto:contato@2irmaosimpressoes3d.com.br"
+              href={`mailto:${settings.email}`}
               aria-label="E-mail"
               className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 transition hover:bg-accent"
             >
               <Mail size={17} />
             </a>
             <a
-              href="https://wa.me/5511999999999"
+              href={buildWhatsappLink(WHATSAPP_MESSAGES.default, settings.whatsapp)}
               target="_blank"
               rel="noreferrer"
               aria-label="WhatsApp"
@@ -64,9 +72,9 @@ export function Footer() {
         <div>
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-white/50">Atendimento</h3>
           <ul className="space-y-2.5 text-sm text-white/75">
-            <li>WhatsApp: (11) 99999-9999</li>
-            <li>contato@2irmaosimpressoes3d.com.br</li>
-            <li>Seg a sex, 9h às 18h</li>
+            <li>WhatsApp: {whatsappDisplay}</li>
+            <li>{settings.email}</li>
+            <li>{settings.businessHours}</li>
           </ul>
           <div className="mt-5">
             <span className="mb-2 block text-xs font-semibold uppercase tracking-wide text-white/50">Formas de pagamento</span>

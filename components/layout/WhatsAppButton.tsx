@@ -2,11 +2,14 @@
 
 import { MessageCircle } from "lucide-react";
 import { buildWhatsappLink, WHATSAPP_MESSAGES } from "@/lib/whatsapp";
+import { useStoreSettings } from "@/lib/hooks/useStoreSettings";
 
 export function WhatsAppButton() {
+  const settings = useStoreSettings();
+
   return (
     <a
-      href={buildWhatsappLink(WHATSAPP_MESSAGES.default)}
+      href={buildWhatsappLink(WHATSAPP_MESSAGES.default, settings.whatsapp)}
       target="_blank"
       rel="noreferrer"
       aria-label="Falar no WhatsApp"
