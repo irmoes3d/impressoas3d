@@ -1,17 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
-import { customers } from "@/lib/data/customers";
 import { useAllOrders } from "@/lib/admin/useAllOrders";
 import { formatBRL, formatDate } from "@/lib/format";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+
+interface CustomerRow { id: string; name: string; email: string; phone: string | null; created_at: string }
 
 export default function AdminClientesPage() {
   const orders = useAllOrders();
   const [query, setQuery] = useState("");
+  const [customers, setCustomers] = useState<CustomerRow[]>([]);
+
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    supabase.from("profiles").select("id,name,email,phone,created_at").eq("role", "cliente").order("created_at", { ascending: false })
+      .then(({ data }) => setCustomers((data ?? []) as CustomerRow[]));
+  }, []);
 
   const rows = customers
-    .filter((c) => c.name.toLowerCase().includes(query.toLowerCase()) || c.email.toLowerCase().includes(query.toLowerCase()))
+    .filter((c) => c.name.toLowerCase().includes(query.toLowerCase()) || (c.email ?? "").toLowerCase().includes(query.toLowerCase()))
     .map((c) => {
       const customerOrders = orders.filter((o) => o.customerEmail === c.email);
       return { ...c, ordersCount: customerOrders.length, total: customerOrders.reduce((s, o) => s + o.total, 0) };
@@ -46,12 +55,11 @@ export default function AdminClientesPage() {
               <tr key={c.id} className="border-t border-graphite-100 hover:bg-graphite-100/40">
                 <td className="px-4 py-3">
                   <p className="font-medium text-ink">{c.name}</p>
-                  <p className="text-xs text-graphite-400">{c.document}</p>
                 </td>
                 <td className="px-4 py-3 text-graphite-500">{c.email}<br /><span className="text-xs text-graphite-400">{c.phone}</span></td>
                 <td className="px-4 py-3 text-graphite-500">{c.ordersCount}</td>
                 <td className="px-4 py-3 font-medium text-ink">{formatBRL(c.total)}</td>
-                <td className="px-4 py-3 text-graphite-400">{formatDate(c.createdAt)}</td>
+                <td className="px-4 py-3 text-graphite-400">{formatDate(c.created_at.slice(0, 10))}</td>
               </tr>
             ))}
           </tbody>

@@ -316,6 +316,26 @@ create table if not exists inventory (
   created_at timestamptz not null default now()
 );
 
+create table if not exists production_losses (
+  id uuid primary key default gen_random_uuid(),
+  material_id uuid references materials (id) on delete set null,
+  product_id uuid references products (id) on delete set null,
+  description text not null,
+  quantity_pieces int not null default 1,
+  weight_g numeric(10, 2) not null default 0,
+  cost numeric(10, 2) not null default 0,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists financial_expenses (
+  id uuid primary key default gen_random_uuid(),
+  description text not null,
+  category text not null default 'outros',
+  amount numeric(10, 2) not null default 0,
+  expense_date date not null default current_date,
+  created_at timestamptz not null default now()
+);
+
 create table if not exists notifications (
   id uuid primary key default gen_random_uuid(),
   profile_id uuid not null references profiles (id) on delete cascade,
@@ -390,6 +410,8 @@ alter table printers enable row level security;
 alter table production_queue enable row level security;
 alter table materials enable row level security;
 alter table inventory enable row level security;
+alter table production_losses enable row level security;
+alter table financial_expenses enable row level security;
 alter table notifications enable row level security;
 
 -- profiles: cada um vê/edita o próprio; staff vê todos
@@ -514,6 +536,10 @@ drop policy if exists "materials_staff" on materials;
 create policy "materials_staff" on materials for all using (public.is_staff()) with check (public.is_staff());
 drop policy if exists "inventory_staff" on inventory;
 create policy "inventory_staff" on inventory for all using (public.is_staff()) with check (public.is_staff());
+drop policy if exists "production_losses_staff" on production_losses;
+create policy "production_losses_staff" on production_losses for all using (public.is_staff()) with check (public.is_staff());
+drop policy if exists "financial_expenses_staff" on financial_expenses;
+create policy "financial_expenses_staff" on financial_expenses for all using (public.is_staff()) with check (public.is_staff());
 
 -- notificações: dono ou staff
 drop policy if exists "notifications_owner_or_staff" on notifications;

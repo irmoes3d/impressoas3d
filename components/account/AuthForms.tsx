@@ -34,6 +34,8 @@ export function AuthForms() {
       setMode("login");
       return;
     }
+    const role = "role" in result ? result.role : undefined;
+    router.replace(role === "admin" || role === "funcionario" ? "/admin" : "/conta");
     router.refresh();
   }
 

@@ -1,14 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, Trash2, X } from "lucide-react";
-import { reviews as seedReviews } from "@/lib/data/reviews";
-import { products } from "@/lib/data/products";
+import type { Review } from "@/lib/types";
 import { RatingStars } from "@/components/ui/RatingStars";
 import { formatDate } from "@/lib/format";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function AdminAvaliacoesPage() {
-  const [reviews, setReviews] = useState(seedReviews.map((r) => ({ ...r, approved: true })));
+  const [reviews, setReviews] = useState<Array<Review & { approved: boolean }>>([]);
+
+  useEffect(() => {
+    createSupabaseBrowserClient().from("reviews").select("*").order("created_at", { ascending: false }).then(({ data }) => setReviews((data ?? []).map((item) => ({ id: item.id, productId: item.product_id, customerName: item.customer_name, rating: item.rating as Review["rating"], comment: item.comment, verifiedPurchase: item.verified_purchase, createdAt: item.created_at, photoSeed: item.photo_seed ?? undefined, approved: item.approved }))));
+  }, []);
 
   function toggle(id: string, approved: boolean) {
     setReviews((prev) => prev.map((r) => (r.id === id ? { ...r, approved } : r)));
@@ -26,7 +30,6 @@ export default function AdminAvaliacoesPage() {
 
       <div className="space-y-3">
         {reviews.map((r) => {
-          const product = products.find((p) => p.id === r.productId);
           return (
             <div key={r.id} className={`flex items-start justify-between rounded-2xl border p-5 ${r.approved ? "border-graphite-100 bg-white" : "border-danger/30 bg-danger/5"}`}>
               <div>
@@ -35,7 +38,7 @@ export default function AdminAvaliacoesPage() {
                   <RatingStars value={r.rating} />
                   <span className="text-xs text-graphite-400">{formatDate(r.createdAt)}</span>
                 </div>
-                <p className="mt-1 text-xs text-graphite-400">Produto: {product?.name}</p>
+                <p className="mt-1 text-xs text-graphite-400">Produto: {r.productId}</p>
                 <p className="mt-2 text-sm text-graphite-600">{r.comment}</p>
               </div>
               <div className="flex shrink-0 gap-1.5">

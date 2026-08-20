@@ -5,26 +5,38 @@ import { Clock, DollarSign, FileText, PackageCheck, ShoppingBag, Truck, Users, W
 import { KpiCard } from "@/components/admin/KpiCard";
 import { SalesChart, TopProductsChart } from "@/components/admin/DashboardCharts";
 import { StatusPill, paymentTone } from "@/components/admin/StatusPill";
-import { getSalesLast30Days, getTopSellingProducts } from "@/lib/data/dashboard";
 import { useAllOrders } from "@/lib/admin/useAllOrders";
 import { useAllQuotes } from "@/lib/admin/useAllQuotes";
-import { customers } from "@/lib/data/customers";
 import { formatBRL, formatDate } from "@/lib/format";
 
 const OPEN_QUOTE_STATUSES = ["novo", "em_analise", "orcamento_enviado"];
 
 export default function AdminDashboardPage() {
-  const sales = getSalesLast30Days();
-  const topProducts = getTopSellingProducts();
   const orders = useAllOrders();
   const quotes = useAllQuotes();
 
+  const today = new Date().toISOString().slice(0, 10);
+  const sales = Array.from({ length: 30 }, (_, index) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (29 - index));
+    const key = date.toISOString().slice(0, 10);
+    return {
+      date: date.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
+      vendas: orders.filter((order) => order.paymentStatus === "aprovado" && order.createdAt.slice(0, 10) === key).reduce((sum, order) => sum + order.total, 0),
+    };
+  });
+  const productTotals = new Map<string, number>();
+  orders.filter((order) => order.paymentStatus === "aprovado").forEach((order) => order.items.forEach((item) => {
+    productTotals.set(item.name, (productTotals.get(item.name) ?? 0) + item.quantity);
+  }));
+  const topProducts = [...productTotals.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([name, vendas]) => ({ name, vendas }));
+
   const salesToday = sales[sales.length - 1].vendas;
   const salesMonth = sales.reduce((s, d) => s + d.vendas, 0);
-  const ordersToday = orders.filter((o) => o.createdAt === "2026-08-06").length || 3;
+  const ordersToday = orders.filter((o) => o.createdAt.slice(0, 10) === today).length;
   const inProduction = orders.filter((o) => !["recebido", "enviado", "entregue"].includes(o.status)).length;
   const readyToShip = orders.filter((o) => o.status === "embalando" || o.kanbanStage === "pronto").length;
-  const avgTicket = orders.reduce((s, o) => s + o.total, 0) / orders.length;
+  const avgTicket = orders.length ? orders.reduce((s, o) => s + o.total, 0) / orders.length : 0;
 
   const paidOrders = orders.filter((o) => o.paymentStatus === "aprovado");
   const pendingOrders = orders.filter((o) => o.paymentStatus === "aguardando");
@@ -42,7 +54,7 @@ export default function AdminDashboardPage() {
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <KpiCard icon={DollarSign} label="Vendas hoje" value={formatBRL(salesToday)} />
-        <KpiCard icon={TrendingUp} label="Vendas no mês" value={formatBRL(salesMonth)} />
+        <KpiCard icon={TrendingUp} label="Vendas nos últimos 30 dias" value={formatBRL(salesMonth)} />
         <KpiCard icon={ShoppingBag} label="Pedidos hoje" value={String(ordersToday)} />
         <KpiCard icon={Clock} label="Em produção" value={String(inProduction)} />
         <KpiCard icon={PackageCheck} label="Pedidos faturados" value={String(paidOrders.length)} hint={formatBRL(invoicedTotal)} />
@@ -107,7 +119,7 @@ export default function AdminDashboardPage() {
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <KpiCard icon={PackageCheck} label="Ticket médio" value={formatBRL(avgTicket)} />
-        <KpiCard icon={Users} label="Clientes cadastrados" value={String(customers.length)} />
+        <KpiCard icon={Users} label="Clientes com pedidos" value={String(new Set(orders.map((order) => order.customerEmail)).size)} />
       </div>
     </div>
   );

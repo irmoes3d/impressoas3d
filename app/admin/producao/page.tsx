@@ -5,7 +5,7 @@ import { GripVertical } from "lucide-react";
 import { useAllOrders } from "@/lib/admin/useAllOrders";
 import { updateStoredOrder, getStoredOrder } from "@/lib/orders-store";
 import { KANBAN_STAGE_LABEL, type KanbanStage, type Order } from "@/lib/types";
-import { printers } from "@/lib/data/printers";
+const printers: Array<{ id: string; name: string }> = [];
 import { formatDate } from "@/lib/format";
 
 const STAGES: KanbanStage[] = ["aguardando", "arquivo_preparado", "fila_impressao", "imprimindo", "acabamento", "pronto"];

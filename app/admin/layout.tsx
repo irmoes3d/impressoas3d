@@ -13,7 +13,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
 
   function exitAdmin() {
-    localStorage.removeItem("2irmaos:admin-demo");
     signOut();
     router.push("/");
   }

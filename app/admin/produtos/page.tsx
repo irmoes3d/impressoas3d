@@ -3,7 +3,6 @@
 import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { CheckCircle2, Eye, EyeOff, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react";
-import { products as seedProducts } from "@/lib/data/products";
 import { categories } from "@/lib/data/categories";
 import type { Product } from "@/lib/types";
 import { formatBRL } from "@/lib/format";
@@ -13,7 +12,7 @@ import { ProductForm, emptyProduct } from "@/components/admin/ProductForm";
 import { deleteProduct, loadAdminProducts, saveProduct, setProductActive } from "@/lib/actions/products";
 
 export default function AdminProdutosPage() {
-  const [products, setProducts] = useState<Product[]>(seedProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [query, setQuery] = useState("");
   const [editing, setEditing] = useState<Product | null>(null);
   const [creating, setCreating] = useState(false);

@@ -8,7 +8,7 @@ import { updateStoredOrder, getStoredOrder } from "@/lib/orders-store";
 import { formatBRL, formatDate } from "@/lib/format";
 import { PRODUCTION_STATUS_LABEL, PRODUCTION_STATUS_ORDER, type Order, type PaymentStatus, type ProductionStatus } from "@/lib/types";
 import { OrderTimeline } from "@/components/order/OrderTimeline";
-import { printers } from "@/lib/data/printers";
+const printers: Array<{ id: string; name: string }> = [];
 
 export default function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);

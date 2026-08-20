@@ -1,18 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import { categories as seedCategories } from "@/lib/data/categories";
 import type { Category } from "@/lib/types";
 import { Modal } from "@/components/admin/Modal";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 function emptyCategory(): Category {
   return { id: crypto.randomUUID(), slug: "", name: "", description: "", icon: "sparkles" };
 }
 
 export default function AdminCategoriasPage() {
-  const [categories, setCategories] = useState<Category[]>(seedCategories);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [editing, setEditing] = useState<Category | null>(null);
+
+  useEffect(() => {
+    createSupabaseBrowserClient().from("categories").select("id,slug,name,description,icon").order("sort_order")
+      .then(({ data }) => setCategories((data ?? []) as Category[]));
+  }, []);
 
   function save(e: React.FormEvent) {
     e.preventDefault();

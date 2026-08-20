@@ -1,7 +1,6 @@
 import "server-only";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { ColorOption, CustomFieldDef, FieldType, Product, ProductBadge, ProductImage, SizeOption } from "@/lib/types";
-import { products as mockProducts, getProductBySlug as getMockBySlug } from "@/lib/data/products";
 
 // Camada de acesso a produtos: tenta o Supabase (schema em supabase/schema.sql)
 // e cai para os dados fictícios locais se o banco ainda não tiver sido
@@ -83,10 +82,10 @@ export async function getProducts(): Promise<Product[]> {
   try {
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase.from("products").select(SELECT).eq("active", true);
-    if (error || !data || data.length === 0) return mockProducts;
+    if (error || !data) return [];
     return data.map(mapRow);
   } catch {
-    return mockProducts;
+    return [];
   }
 }
 
@@ -94,10 +93,10 @@ export async function getAdminProducts(): Promise<Product[]> {
   try {
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase.from("products").select(SELECT).order("created_at", { ascending: false });
-    if (error || !data) return mockProducts.map((product) => ({ ...product, active: true }));
+    if (error || !data) return [];
     return data.map(mapRow);
   } catch {
-    return mockProducts.map((product) => ({ ...product, active: true }));
+    return [];
   }
 }
 
@@ -105,10 +104,10 @@ export async function getProductBySlug(slug: string): Promise<Product | undefine
   try {
     const supabase = await createSupabaseServerClient();
     const { data, error } = await supabase.from("products").select(SELECT).eq("slug", slug).maybeSingle();
-    if (error || !data) return getMockBySlug(slug);
+    if (error || !data) return undefined;
     return mapRow(data);
   } catch {
-    return getMockBySlug(slug);
+    return undefined;
   }
 }
 

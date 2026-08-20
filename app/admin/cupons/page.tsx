@@ -1,20 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import { coupons as seedCoupons } from "@/lib/data/coupons";
 import type { Coupon } from "@/lib/types";
 import { formatBRL, formatDate } from "@/lib/format";
 import { Modal } from "@/components/admin/Modal";
 import { StatusPill } from "@/components/admin/StatusPill";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 function emptyCoupon(): Coupon {
   return { id: crypto.randomUUID(), code: "", type: "percentual", value: 10, minOrderValue: 0, maxUses: 100, usedCount: 0, expiresAt: new Date().toISOString().slice(0, 10), active: true };
 }
 
 export default function AdminCuponsPage() {
-  const [coupons, setCoupons] = useState<Coupon[]>(seedCoupons);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [editing, setEditing] = useState<Coupon | null>(null);
+
+  useEffect(() => {
+    createSupabaseBrowserClient().from("coupons").select("*").order("expires_at", { ascending: false }).then(({ data }) => setCoupons((data ?? []).map((item) => ({ id: item.id, code: item.code, type: item.type, value: Number(item.value), minOrderValue: Number(item.min_order_value), maxUses: item.max_uses, usedCount: item.used_count, expiresAt: item.expires_at ?? "", active: item.active }))));
+  }, []);
 
   function save(e: React.FormEvent) {
     e.preventDefault();
