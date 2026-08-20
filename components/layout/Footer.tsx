@@ -88,7 +88,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/10 py-5 text-center text-xs text-white/40">
-        © {new Date().getFullYear()} 2 Irmãos Impressões 3D. Todos os direitos reservados.
+        © {new Date().getFullYear()} 2 Irmãos Impressões 3D. Todos os direitos reservados. <span className="mx-1.5 text-white/20">·</span> Desenvolvido por <span className="font-semibold text-white/60">IARA TECH</span>
       </div>
     </footer>
   );
