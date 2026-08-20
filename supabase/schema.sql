@@ -226,6 +226,26 @@ create table if not exists order_items (
   customization jsonb not null default '{}'::jsonb
 );
 
+create table if not exists order_files (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid not null references orders (id) on delete cascade,
+  uploaded_by uuid references profiles (id) on delete set null,
+  file_kind text not null check (file_kind in ('modelo_3d', 'previa')),
+  name text not null,
+  storage_path text not null,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists design_approvals (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid not null unique references orders (id) on delete cascade,
+  preview_file_id uuid references order_files (id) on delete set null,
+  status text not null default 'aguardando' check (status in ('aguardando', 'aprovado', 'ajuste_solicitado')),
+  customer_comment text,
+  responded_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
 create table if not exists payments (
   id uuid primary key default gen_random_uuid(),
   order_id uuid not null references orders (id) on delete cascade,
@@ -401,6 +421,8 @@ alter table cart_items enable row level security;
 alter table coupons enable row level security;
 alter table orders enable row level security;
 alter table order_items enable row level security;
+alter table order_files enable row level security;
+alter table design_approvals enable row level security;
 alter table payments enable row level security;
 alter table shipping enable row level security;
 alter table reviews enable row level security;
@@ -492,6 +514,16 @@ create policy "order_items_owner_or_staff" on order_items for all
   using (exists (select 1 from orders o where o.id = order_id and (o.profile_id = auth.uid() or public.is_staff())))
   with check (exists (select 1 from orders o where o.id = order_id and (o.profile_id = auth.uid() or public.is_staff())));
 
+drop policy if exists "order_files_owner_or_staff" on order_files;
+create policy "order_files_owner_or_staff" on order_files for all
+  using (exists (select 1 from orders o where o.id = order_id and (o.profile_id = auth.uid() or public.is_staff())))
+  with check (exists (select 1 from orders o where o.id = order_id and (o.profile_id = auth.uid() or public.is_staff())));
+
+drop policy if exists "design_approvals_owner_or_staff" on design_approvals;
+create policy "design_approvals_owner_or_staff" on design_approvals for all
+  using (exists (select 1 from orders o where o.id = order_id and (o.profile_id = auth.uid() or public.is_staff())))
+  with check (exists (select 1 from orders o where o.id = order_id and (o.profile_id = auth.uid() or public.is_staff())));
+
 drop policy if exists "payments_owner_or_staff" on payments;
 create policy "payments_owner_or_staff" on payments for all
   using (exists (select 1 from orders o where o.id = order_id and (o.profile_id = auth.uid() or public.is_staff())))
@@ -558,6 +590,10 @@ insert into storage.buckets (id, name, public)
 values ('quote-files', 'quote-files', false)
 on conflict (id) do nothing;
 
+insert into storage.buckets (id, name, public)
+values ('order-files', 'order-files', false)
+on conflict (id) do nothing;
+
 drop policy if exists "product_images_public_read" on storage.objects;
 create policy "product_images_public_read" on storage.objects for select
   using (bucket_id = 'product-images');
@@ -577,6 +613,23 @@ create policy "quote_files_owner_rw" on storage.objects for all
   with check (
     bucket_id = 'quote-files' and
     (public.is_staff() or (storage.foldername(name))[1] = auth.uid()::text)
+  );
+
+drop policy if exists "order_files_storage_owner_or_staff" on storage.objects;
+create policy "order_files_storage_owner_or_staff" on storage.objects for all
+  using (
+    bucket_id = 'order-files' and exists (
+      select 1 from orders o
+      where o.id = ((storage.foldername(name))[1])::uuid
+        and (o.profile_id = auth.uid() or public.is_staff())
+    )
+  )
+  with check (
+    bucket_id = 'order-files' and exists (
+      select 1 from orders o
+      where o.id = ((storage.foldername(name))[1])::uuid
+        and (o.profile_id = auth.uid() or public.is_staff())
+    )
   );
 
 -- =============================================================================

@@ -59,8 +59,6 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
     estimatedDate,
   };
 
-  saveStoredOrder(order);
-
   try {
     const supabase = createSupabaseBrowserClient();
     const { data: authData } = await supabase.auth.getUser();
@@ -89,6 +87,7 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
       .single();
 
     if (!error && orderRow) {
+      order.id = orderRow.id;
       await supabase.from("order_items").insert(
         order.items.map((i) => ({
           order_id: orderRow.id,
@@ -111,6 +110,8 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
   } catch {
     // Banco ainda não provisionado — o pedido segue disponível via localStorage.
   }
+
+  saveStoredOrder(order);
 
   return order;
 }

@@ -7,6 +7,7 @@ import { getStoredOrder, updateStoredOrder } from "@/lib/orders-store";
 import { buildFakePixCode } from "@/lib/actions/orders";
 import { PRODUCTION_STATUS_ORDER, type Order } from "@/lib/types";
 import { OrderTimeline } from "@/components/order/OrderTimeline";
+import { DesignApprovalPanel } from "@/components/order/DesignApprovalPanel";
 import { PixPanel } from "@/components/order/PixPanel";
 import { formatBRL, formatDateLong } from "@/lib/format";
 import { buildWhatsappLink, WHATSAPP_MESSAGES } from "@/lib/whatsapp";
@@ -89,6 +90,7 @@ export default function OrderTrackingPage({ params }: { params: Promise<{ id: st
               </div>
             )}
           </section>
+          <DesignApprovalPanel orderId={order.id} />
 
           <section className="rounded-2xl border border-dashed border-accent/40 bg-accent-100/30 p-5">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-accent">Ambiente de demonstração</p>
