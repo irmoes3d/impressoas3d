@@ -136,6 +136,7 @@ export interface Product {
   ratingAvg: number;
   ratingCount: number;
   soldCount: number;
+  active?: boolean;
   images: ProductImage[];
   variants: ProductVariantGroup;
   allowCustomName: boolean;

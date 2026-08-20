@@ -19,7 +19,7 @@ interface ProductRow {
   weight_grams: number | null; dimensions: string | null; production_days: number | null; shipping_days: number | null;
   price: string | number; compare_at_price: string | number | null; installments: number | null; stock: number | null;
   made_to_order: boolean | null; badge: string | null; rating_avg: string | number | null; rating_count: number | null;
-  sold_count: number | null; allow_custom_name: boolean | null; created_at: string | null;
+  sold_count: number | null; allow_custom_name: boolean | null; active: boolean | null; created_at: string | null;
   product_images: ProductImageRow[] | null; product_variants: ProductVariantRow[] | null; custom_fields: CustomFieldRow[] | null;
 }
 
@@ -67,6 +67,7 @@ function mapRow(row: ProductRow): Product {
     ratingAvg: Number(row.rating_avg ?? 0),
     ratingCount: row.rating_count ?? 0,
     soldCount: row.sold_count ?? 0,
+    active: row.active ?? true,
     images,
     variants: { colors, sizes },
     allowCustomName: row.allow_custom_name ?? false,
@@ -86,6 +87,17 @@ export async function getProducts(): Promise<Product[]> {
     return data.map(mapRow);
   } catch {
     return mockProducts;
+  }
+}
+
+export async function getAdminProducts(): Promise<Product[]> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase.from("products").select(SELECT).order("created_at", { ascending: false });
+    if (error || !data) return mockProducts.map((product) => ({ ...product, active: true }));
+    return data.map(mapRow);
+  } catch {
+    return mockProducts.map((product) => ({ ...product, active: true }));
   }
 }
 

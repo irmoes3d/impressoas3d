@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import type { ColorOption, CustomFieldDef, FieldType, Product, ProductBadge } from "@/lib/types";
 import { categories } from "@/lib/data/categories";
 
@@ -27,6 +27,7 @@ export function emptyProduct(): Product {
     ratingAvg: 0,
     ratingCount: 0,
     soldCount: 0,
+    active: true,
     images: [{ id: crypto.randomUUID(), seed: "novo-produto", alt: "Novo produto" }],
     variants: { colors: [] },
     allowCustomName: false,
@@ -38,7 +39,7 @@ export function emptyProduct(): Product {
 
 const FIELD_TYPES: FieldType[] = ["texto", "numero", "data", "cor", "upload", "observacoes"];
 
-export function ProductForm({ initial, onSave }: { initial: Product; onSave: (p: Product) => void }) {
+export function ProductForm({ initial, onSave, saving = false }: { initial: Product; onSave: (p: Product) => void; saving?: boolean }) {
   const [product, setProduct] = useState<Product>(initial);
 
   function set<K extends keyof Product>(key: K, value: Product[K]) {
@@ -102,7 +103,7 @@ export function ProductForm({ initial, onSave }: { initial: Product; onSave: (p:
 
       <div className="grid gap-4 sm:grid-cols-3">
         <F label="Preço (R$)"><input required type="number" step="0.01" value={product.price} onChange={(e) => set("price", Number(e.target.value))} className="input" /></F>
-        <F label="Preço promocional"><input type="number" step="0.01" value={product.compareAtPrice ?? ""} onChange={(e) => set("compareAtPrice", e.target.value ? Number(e.target.value) : undefined)} className="input" /></F>
+        <F label="Preço anterior (de)"><input type="number" step="0.01" value={product.compareAtPrice ?? ""} onChange={(e) => set("compareAtPrice", e.target.value ? Number(e.target.value) : undefined)} className="input" /></F>
         <F label="Parcelas"><input type="number" min={1} value={product.installments} onChange={(e) => set("installments", Number(e.target.value))} className="input" /></F>
         <F label="Material"><input value={product.material} onChange={(e) => set("material", e.target.value)} className="input" /></F>
         <F label="Peso (g)"><input type="number" value={product.weightGrams} onChange={(e) => set("weightGrams", Number(e.target.value))} className="input" /></F>
@@ -157,8 +158,8 @@ export function ProductForm({ initial, onSave }: { initial: Product; onSave: (p:
         </div>
       </div>
 
-      <button type="submit" className="w-full rounded-full bg-accent py-3 text-sm font-semibold text-white hover:bg-accent-600">
-        Salvar produto
+      <button type="submit" disabled={saving} className="flex w-full items-center justify-center gap-2 rounded-full bg-accent py-3 text-sm font-semibold text-white hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-60">
+        {saving && <Loader2 size={16} className="animate-spin" />} {saving ? "Salvando..." : "Salvar produto"}
       </button>
 
       <style jsx>{`
