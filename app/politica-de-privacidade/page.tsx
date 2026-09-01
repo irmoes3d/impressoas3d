@@ -24,7 +24,7 @@ export default function Page() {
       <h2>Seus direitos</h2>
       <p>
         Você pode solicitar a atualização ou exclusão dos seus dados a qualquer momento pela área
-        &quot;Minha conta&quot; ou entrando em contato pelo e-mail contato@2irmaosimpressoes3d.com.br.
+        &quot;Minha conta&quot; ou entrando em contato pelo e-mail irmoes3d@outlook.com.
       </p>
     </LegalPage>
   );
