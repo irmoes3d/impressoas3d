@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, LogIn, UserPlus } from "lucide-react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { Logo } from "@/components/brand/Logo";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export function AuthForms() {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -39,6 +40,26 @@ export function AuthForms() {
     router.refresh();
   }
 
+  async function requestPasswordReset() {
+    setError(null);
+    setInfo(null);
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      setError("Informe seu e-mail para recuperar a senha.");
+      return;
+    }
+    setLoading(true);
+    const { error: resetError } = await createSupabaseBrowserClient().auth.resetPasswordForEmail(normalizedEmail, {
+      redirectTo: `${window.location.origin}/conta/redefinir-senha`,
+    });
+    setLoading(false);
+    if (resetError) {
+      setError("Não foi possível enviar a recuperação agora. Tente novamente em alguns minutos.");
+      return;
+    }
+    setInfo("Se o e-mail estiver cadastrado, você receberá um link seguro para criar uma nova senha.");
+  }
+
   return (
     <div className="container-page grid gap-10 py-14 lg:grid-cols-2 lg:items-center">
       <div className="hidden justify-center lg:flex">
@@ -69,6 +90,12 @@ export function AuthForms() {
           )}
           <input required type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-xl border border-graphite-200 px-4 py-2.5 text-sm outline-none focus:border-accent" />
           <input required type="password" minLength={6} placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-xl border border-graphite-200 px-4 py-2.5 text-sm outline-none focus:border-accent" />
+
+          {mode === "login" && (
+            <button type="button" onClick={requestPasswordReset} disabled={loading} className="text-sm font-medium text-accent hover:underline disabled:opacity-60">
+              Esqueci minha senha
+            </button>
+          )}
 
           {error && <p className="text-sm text-danger">{error}</p>}
           {info && <p className="text-sm text-ok">{info}</p>}
