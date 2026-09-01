@@ -13,7 +13,8 @@ export type ProductionStatus =
   | "controle_qualidade"
   | "embalando"
   | "enviado"
-  | "entregue";
+  | "entregue"
+  | "cancelado";
 
 export const PRODUCTION_STATUS_LABEL: Record<ProductionStatus, string> = {
   recebido: "Pedido recebido",
@@ -26,6 +27,7 @@ export const PRODUCTION_STATUS_LABEL: Record<ProductionStatus, string> = {
   embalando: "Embalando",
   enviado: "Enviado",
   entregue: "Entregue",
+  cancelado: "Cancelado (pagamento não confirmado em 24h)",
 };
 
 export const PRODUCTION_STATUS_ORDER: ProductionStatus[] = [

@@ -21,5 +21,6 @@ export function productionTone(status: string): keyof typeof TONE {
   if (status === "entregue") return "ok";
   if (status === "enviado") return "info";
   if (status === "recebido") return "neutral";
+  if (status === "cancelado") return "danger";
   return "warn";
 }
