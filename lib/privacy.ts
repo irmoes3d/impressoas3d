@@ -1,0 +1,2 @@
+export const PRIVACY_DOCUMENT_VERSION = "2026-09-01";
+

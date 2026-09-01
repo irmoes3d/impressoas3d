@@ -9,7 +9,7 @@ import { formatBRL, formatDate } from "@/lib/format";
 import { PRODUCTION_STATUS_LABEL, PRODUCTION_STATUS_ORDER, type Order, type ProductionStatus } from "@/lib/types";
 import { OrderTimeline } from "@/components/order/OrderTimeline";
 import { DesignApprovalPanel } from "@/components/order/DesignApprovalPanel";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { updateAdminOrder } from "@/lib/actions/admin-orders";
 const printers: Array<{ id: string; name: string }> = [];
 
 export default function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -24,22 +24,18 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
 
   async function patch(update: Partial<Order>) {
     if (!order) return;
-    if (update.status === "fila_impressao") {
-      const supabase = createSupabaseBrowserClient();
-      const { data: preview } = await supabase.from("order_files").select("id").eq("order_id", order.id).eq("file_kind", "previa").limit(1);
-      if (preview?.length) {
-        const { data: approval } = await supabase.from("design_approvals").select("status").eq("order_id", order.id).maybeSingle();
-        if (approval?.status !== "aprovado") { setStatusError("O cliente precisa aprovar a prévia antes de entrar na fila de impressão."); return; }
-      }
-    }
     setStatusError(null);
-    const next = { ...order, ...update };
-    setOrder(next);
-    const dbUpdate: Record<string, unknown> = {};
-    if (update.status) dbUpdate.status = update.status;
-    if ("printerId" in update) dbUpdate.printer_id = update.printerId ?? null;
-    if ("trackingCode" in update) dbUpdate.tracking_code = update.trackingCode ?? null;
-    await createSupabaseBrowserClient().from("orders").update(dbUpdate).eq("id", order.id);
+    const result = await updateAdminOrder({
+      orderId: order.id,
+      status: update.status,
+      printerId: "printerId" in update ? update.printerId ?? null : undefined,
+      trackingCode: "trackingCode" in update ? update.trackingCode ?? null : undefined,
+    });
+    if (!result.ok) {
+      setStatusError(result.error ?? "Não foi possível atualizar o pedido.");
+      return;
+    }
+    setOrder({ ...order, ...update });
     if (getStoredOrder(order.id)) updateStoredOrder(order.id, update);
   }
 

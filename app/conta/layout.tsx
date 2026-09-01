@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Heart, LayoutDashboard, LogOut, MapPin, Package, User as UserIcon, FileText } from "lucide-react";
+import { Heart, LayoutDashboard, LogOut, MapPin, Package, User as UserIcon, FileText, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { AuthForms } from "@/components/account/AuthForms";
 
@@ -13,6 +13,7 @@ const NAV = [
   { href: "/conta/enderecos", label: "Endereços", icon: MapPin },
   { href: "/conta/favoritos", label: "Favoritos", icon: Heart },
   { href: "/conta/orcamentos", label: "Orçamentos", icon: FileText },
+  { href: "/conta/privacidade", label: "Privacidade", icon: ShieldCheck },
 ];
 
 export default function ContaLayout({ children }: { children: React.ReactNode }) {

@@ -1,5 +1,6 @@
 import { createHmac, createHash, timingSafeEqual } from "node:crypto";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { sendOrderNotification } from "@/lib/email/order-notifications";
 
 export const runtime = "nodejs";
 
@@ -100,5 +101,23 @@ export async function POST(request: Request) {
     : { payment_status: status };
   const { error: orderError } = await admin.from("orders").update(orderUpdate).eq("id", payment.order_id);
   if (orderError) return Response.json({ error: "Could not update order" }, { status: 500 });
+
+  if (status === "aprovado") {
+    const { data: order } = await admin.from("orders")
+      .select("id, code, customer_name, customer_email, tracking_code")
+      .eq("id", payment.order_id).maybeSingle();
+    if (order) {
+      await sendOrderNotification({
+        orderId: order.id,
+        orderCode: order.code,
+        customerName: order.customer_name,
+        customerEmail: order.customer_email,
+        status: "pagamento_aprovado",
+        trackingCode: order.tracking_code,
+        eventType: "payment_approved",
+        eventKey: `payment-approved:${payment.id}`,
+      });
+    }
+  }
   return Response.json({ accepted: true });
 }

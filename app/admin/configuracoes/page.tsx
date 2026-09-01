@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { SupabaseKeepAlive } from "@/components/admin/SupabaseKeepAlive";
 import { DEFAULT_SETTINGS, getStoredSettings, saveStoredSettings, type StoreSettings } from "@/lib/settings-store";
+import { sendAdminEmailTest } from "@/lib/actions/admin-orders";
 
 const INTEGRATIONS = [
   { name: "Supabase (banco de dados e autenticação)", envVar: "NEXT_PUBLIC_SUPABASE_URL" },
@@ -15,6 +16,7 @@ const INTEGRATIONS = [
 export default function AdminConfiguracoesPage() {
   const [form, setForm] = useState<StoreSettings>(DEFAULT_SETTINGS);
   const [saved, setSaved] = useState(false);
+  const [emailTest, setEmailTest] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   const supabaseConfigured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL);
 
@@ -83,6 +85,22 @@ export default function AdminConfiguracoesPage() {
                   </div>
                 );
               })}
+            </div>
+            <div className="border-t border-graphite-100 pt-4">
+              <button
+                type="button"
+                disabled={emailTest === "sending"}
+                onClick={async () => {
+                  setEmailTest("sending");
+                  const result = await sendAdminEmailTest();
+                  setEmailTest(result.ok ? "sent" : "error");
+                }}
+                className="rounded-full border border-accent px-4 py-2 text-xs font-semibold text-accent disabled:opacity-50"
+              >
+                {emailTest === "sending" ? "Enviando..." : "Enviar e-mail de teste"}
+              </button>
+              {emailTest === "sent" && <p className="mt-2 text-xs text-ok">Teste enviado para irmoes3d@outlook.com.</p>}
+              {emailTest === "error" && <p className="mt-2 text-xs text-danger">Não foi possível enviar. Confira as variáveis e o domínio no Resend.</p>}
             </div>
           </div>
 

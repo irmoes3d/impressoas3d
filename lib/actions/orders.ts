@@ -7,6 +7,7 @@ import { computeUnitPrice } from "@/lib/pricing";
 import { calculateShipping } from "@/lib/shipping";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { sendOrderNotification } from "@/lib/email/order-notifications";
 import type { Address, CartCustomization, Order, PaymentMethod } from "@/lib/types";
 
 interface CheckoutItemInput {
@@ -158,5 +159,10 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
     await admin.from("orders").delete().eq("id", orderRow.id);
     throw new Error("Não foi possível registrar os itens do pedido.");
   }
+  await sendOrderNotification({
+    orderId: order.id, orderCode: order.code, customerName: order.customerName,
+    customerEmail: order.customerEmail, status: "recebido", eventType: "new_order",
+    eventKey: `new-order:${order.id}`, adminOnly: true,
+  });
   return order;
 }
