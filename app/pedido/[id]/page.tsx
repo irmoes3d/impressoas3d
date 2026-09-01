@@ -2,10 +2,9 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, PackageSearch, Truck } from "lucide-react";
-import { getStoredOrder, updateStoredOrder } from "@/lib/orders-store";
-import { buildFakePixCode } from "@/lib/actions/orders";
-import { PRODUCTION_STATUS_ORDER, type Order } from "@/lib/types";
+import { CheckCircle2, PackageSearch, Truck } from "lucide-react";
+import { getStoredOrder } from "@/lib/orders-store";
+import type { Order } from "@/lib/types";
 import { OrderTimeline } from "@/components/order/OrderTimeline";
 import { DesignApprovalPanel } from "@/components/order/DesignApprovalPanel";
 import { PixPanel } from "@/components/order/PixPanel";
@@ -20,21 +19,6 @@ export default function OrderTrackingPage({ params }: { params: Promise<{ id: st
   useEffect(() => {
     setOrder(getStoredOrder(id) ?? null);
   }, [id]);
-
-  function approvePayment() {
-    if (!order) return;
-    updateStoredOrder(order.id, { paymentStatus: "aprovado", status: "pagamento_aprovado" });
-    setOrder({ ...order, paymentStatus: "aprovado", status: "pagamento_aprovado" });
-  }
-
-  function advanceStatus() {
-    if (!order) return;
-    const idx = PRODUCTION_STATUS_ORDER.indexOf(order.status);
-    const next = PRODUCTION_STATUS_ORDER[Math.min(idx + 1, PRODUCTION_STATUS_ORDER.length - 1)];
-    const trackingCode = next === "enviado" || next === "entregue" ? order.trackingCode ?? `BR${Math.floor(100000000 + Math.random() * 899999999)}BR` : order.trackingCode;
-    updateStoredOrder(order.id, { status: next, trackingCode });
-    setOrder({ ...order, status: next, trackingCode });
-  }
 
   if (order === undefined) return null;
 
@@ -72,7 +56,7 @@ export default function OrderTrackingPage({ params }: { params: Promise<{ id: st
       <div className="grid gap-10 lg:grid-cols-[1fr_360px]">
         <div className="space-y-8">
           {order.paymentMethod === "pix" && order.paymentStatus === "aguardando" && (
-            <PixPanel code={buildFakePixCode(order.code, order.total)} amount={order.total} orderCode={order.code} />
+            <PixPanel amount={order.total} orderCode={order.code} />
           )}
           {order.paymentStatus === "aprovado" && (
             <p className="flex items-center gap-2 rounded-xl bg-ok/10 px-4 py-3 text-sm font-medium text-ok">
@@ -91,26 +75,6 @@ export default function OrderTrackingPage({ params }: { params: Promise<{ id: st
             )}
           </section>
           <DesignApprovalPanel orderId={order.id} />
-
-          <section className="rounded-2xl border border-dashed border-accent/40 bg-accent-100/30 p-5">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-accent">Ambiente de demonstração</p>
-            <p className="mb-3 text-sm text-graphite-600">
-              Em produção, esses avanços acontecem automaticamente pelo painel administrativo (fila de produção).
-              Aqui você pode simular o fluxo:
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {order.paymentStatus === "aguardando" && (
-                <button onClick={approvePayment} className="rounded-full bg-ink px-4 py-2 text-xs font-semibold text-white">
-                  Simular pagamento aprovado
-                </button>
-              )}
-              {order.status !== "entregue" && order.paymentStatus === "aprovado" && (
-                <button onClick={advanceStatus} className="flex items-center gap-1 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-white">
-                  Avançar etapa <ArrowRight size={13} />
-                </button>
-              )}
-            </div>
-          </section>
 
           <section>
             <h2 className="mb-4 font-display text-lg font-semibold text-ink">Itens do pedido</h2>

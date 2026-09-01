@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { useAllOrders } from "@/lib/admin/useAllOrders";
 import { updateStoredOrder, getStoredOrder } from "@/lib/orders-store";
 import { formatBRL, formatDate } from "@/lib/format";
-import { PRODUCTION_STATUS_LABEL, PRODUCTION_STATUS_ORDER, type Order, type PaymentStatus, type ProductionStatus } from "@/lib/types";
+import { PRODUCTION_STATUS_LABEL, PRODUCTION_STATUS_ORDER, type Order, type ProductionStatus } from "@/lib/types";
 import { OrderTimeline } from "@/components/order/OrderTimeline";
 import { DesignApprovalPanel } from "@/components/order/DesignApprovalPanel";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -37,7 +37,6 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
     setOrder(next);
     const dbUpdate: Record<string, unknown> = {};
     if (update.status) dbUpdate.status = update.status;
-    if (update.paymentStatus) dbUpdate.payment_status = update.paymentStatus;
     if ("printerId" in update) dbUpdate.printer_id = update.printerId ?? null;
     if ("trackingCode" in update) dbUpdate.tracking_code = update.trackingCode ?? null;
     await createSupabaseBrowserClient().from("orders").update(dbUpdate).eq("id", order.id);
@@ -96,15 +95,10 @@ export default function AdminOrderDetailPage({ params }: { params: Promise<{ id:
             {statusError && <p className="mt-2 text-xs text-danger">{statusError}</p>}
 
             <label className="mb-1.5 mt-4 block text-xs font-semibold uppercase tracking-wide text-graphite-400">Status do pagamento</label>
-            <select
-              value={order.paymentStatus}
-              onChange={(e) => patch({ paymentStatus: e.target.value as PaymentStatus })}
-              className="w-full rounded-xl border border-graphite-200 px-3 py-2 text-sm outline-none focus:border-accent"
-            >
-              {["aguardando", "aprovado", "recusado", "estornado"].map((s) => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
+            <p className="rounded-xl border border-graphite-200 bg-graphite-100/50 px-3 py-2 text-sm font-medium text-ink">
+              {order.paymentStatus}
+            </p>
+            <p className="mt-1 text-[11px] text-graphite-400">Atualizado somente por confirmação autenticada do provedor.</p>
 
             <label className="mb-1.5 mt-4 block text-xs font-semibold uppercase tracking-wide text-graphite-400">Impressora</label>
             <select

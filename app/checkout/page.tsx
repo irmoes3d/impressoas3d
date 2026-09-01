@@ -3,19 +3,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CreditCard, Loader2, QrCode, ShieldCheck, Wallet } from "lucide-react";
+import { Loader2, QrCode, ShieldCheck, Wallet } from "lucide-react";
 import { useCart } from "@/lib/context/CartContext";
 import { formatBRL } from "@/lib/format";
 import { evaluateCoupon } from "@/lib/coupons";
 import { calculateShipping, type ShippingOption } from "@/lib/shipping";
 import { createOrder } from "@/lib/actions/orders";
+import { saveStoredOrder } from "@/lib/orders-store";
 import { getProductBySlug } from "@/lib/data/products";
 import type { PaymentMethod } from "@/lib/types";
 
 const PAYMENT_OPTIONS: { id: PaymentMethod; label: string; icon: typeof Wallet }[] = [
   { id: "pix", label: "Pix", icon: QrCode },
-  { id: "cartao_credito", label: "Cartão de crédito", icon: CreditCard },
-  { id: "cartao_debito", label: "Cartão de débito", icon: CreditCard },
   { id: "mercado_pago", label: "Mercado Pago", icon: Wallet },
 ];
 
@@ -42,6 +41,7 @@ export default function CheckoutPage() {
   const [shippingId, setShippingId] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("pix");
   const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (items.length === 0 && !submitting) router.replace("/carrinho");
@@ -52,11 +52,6 @@ export default function CheckoutPage() {
     const product = getProductBySlug(item.productSlug);
     return sum + (product?.weightGrams ?? 150) * item.quantity;
   }, 0);
-
-  const maxProductionDays = items.reduce((max, item) => {
-    const product = getProductBySlug(item.productSlug);
-    return Math.max(max, product?.productionDays ?? 3);
-  }, 1);
 
   async function handleCepBlur() {
     const digits = cep.replace(/\D/g, "");
@@ -98,31 +93,26 @@ export default function CheckoutPage() {
     e.preventDefault();
     if (!canSubmit || !selectedShipping) return;
     setSubmitting(true);
-    const order = await createOrder({
-      items,
-      customerName: name,
-      customerEmail: email,
-      customerPhone: phone,
-      address: {
-        id: crypto.randomUUID(),
-        label: "Entrega",
-        cep,
-        street,
-        number,
-        complement,
-        district,
-        city,
-        state,
-      },
-      shipping: selectedShipping,
-      paymentMethod,
-      couponCode: coupon.valid ? (couponCode ?? undefined) : undefined,
-      discount,
-      subtotal,
-      maxProductionDays,
-    });
-    clear();
-    router.push(`/pedido/${order.id}`);
+    setSubmitError(null);
+    try {
+      const order = await createOrder({
+        items: items.map(({ productSlug, quantity, customization }) => ({ productSlug, quantity, customization })),
+        customerName: name,
+        customerDocument: document,
+        customerEmail: email,
+        customerPhone: phone,
+        address: { id: "", label: "Entrega", cep, street, number, complement, district, city, state },
+        shippingId: selectedShipping.id,
+        paymentMethod,
+        couponCode: coupon.valid ? (couponCode ?? undefined) : undefined,
+      });
+      saveStoredOrder(order);
+      clear();
+      router.push(`/pedido/${order.id}`);
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "Não foi possível finalizar o pedido.");
+      setSubmitting(false);
+    }
   }
 
   if (items.length === 0) return null;
@@ -205,23 +195,12 @@ export default function CheckoutPage() {
 
             {paymentMethod === "pix" && (
               <p className="mt-3 rounded-xl bg-graphite-100/70 p-3 text-xs text-graphite-500">
-                Ao finalizar, geramos o QR Code e o código Pix copia-e-cola na tela de acompanhamento do pedido.
+                O pedido será criado como aguardando pagamento. Não pague códigos enviados fora deste site.
               </p>
-            )}
-            {(paymentMethod === "cartao_credito" || paymentMethod === "cartao_debito") && (
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <Input label="Número do cartão" placeholder="0000 0000 0000 0000" value="" onChange={() => {}} />
-                <Input label="Nome impresso no cartão" placeholder="Como está no cartão" value="" onChange={() => {}} />
-                <Input label="Validade" placeholder="MM/AA" value="" onChange={() => {}} />
-                <Input label="CVV" placeholder="000" value="" onChange={() => {}} />
-                <p className="text-xs text-graphite-400 sm:col-span-2">
-                  Ambiente de demonstração — pronto para integração real com Mercado Pago.
-                </p>
-              </div>
             )}
             {paymentMethod === "mercado_pago" && (
               <p className="mt-3 rounded-xl bg-graphite-100/70 p-3 text-xs text-graphite-500">
-                Você será redirecionado ao Mercado Pago para concluir o pagamento com segurança (integração a ser conectada).
+                A confirmação só será aceita após validação direta da assinatura, referência e valor no Mercado Pago.
               </p>
             )}
           </Section>
@@ -251,6 +230,7 @@ export default function CheckoutPage() {
             {submitting ? <Loader2 size={16} className="animate-spin" /> : <ShieldCheck size={16} />}
             {submitting ? "Processando..." : "Finalizar compra"}
           </button>
+          {submitError && <p role="alert" className="text-center text-xs font-medium text-danger">{submitError}</p>}
           <p className="text-center text-xs text-graphite-400">
             Ao continuar você concorda com nossos{" "}
             <Link href="/termos-de-uso" className="underline">termos de uso</Link>.

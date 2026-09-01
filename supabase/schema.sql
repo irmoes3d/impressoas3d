@@ -253,8 +253,27 @@ create table if not exists payments (
   status payment_status not null default 'aguardando',
   amount numeric(10, 2) not null,
   pix_code text,
+  provider text,
+  provider_payment_id text,
+  provider_external_reference text,
+  verified_at timestamptz,
   paid_at timestamptz,
   created_at timestamptz not null default now()
+);
+
+create unique index if not exists payments_provider_payment_id_key
+  on payments (provider, provider_payment_id)
+  where provider_payment_id is not null;
+
+create table if not exists payment_webhook_events (
+  id uuid primary key default gen_random_uuid(),
+  provider text not null,
+  provider_request_id text not null,
+  provider_payment_id text not null,
+  event_type text not null,
+  payload_hash text not null,
+  created_at timestamptz not null default now(),
+  unique (provider, provider_request_id)
 );
 
 create table if not exists shipping (
@@ -382,6 +401,7 @@ begin
     'cliente'
   )
   on conflict (id) do nothing;
+  if tg_op = 'DELETE' then return old; end if;
   return new;
 end;
 $$;
@@ -424,6 +444,7 @@ alter table order_items enable row level security;
 alter table order_files enable row level security;
 alter table design_approvals enable row level security;
 alter table payments enable row level security;
+alter table payment_webhook_events enable row level security;
 alter table shipping enable row level security;
 alter table reviews enable row level security;
 alter table custom_quotes enable row level security;
@@ -631,6 +652,41 @@ create policy "order_files_storage_owner_or_staff" on storage.objects for all
         and (o.profile_id = auth.uid() or public.is_staff())
     )
   );
+
+-- Escritas financeiras são exclusivas do backend com service role.
+drop policy if exists "orders_insert_own" on orders;
+revoke insert on orders from anon, authenticated;
+revoke insert, update, delete on order_items from anon, authenticated;
+revoke insert, update, delete on payments from anon, authenticated;
+revoke all on payment_webhook_events from anon, authenticated;
+
+create or replace function public.reject_untrusted_financial_changes()
+returns trigger language plpgsql security definer set search_path = public
+as $$
+begin
+  if coalesce(auth.role(), 'postgres') not in ('service_role', 'postgres') then
+    if tg_table_name = 'payments' then
+      raise exception 'payment records are server-managed';
+    end if;
+    if old.subtotal is distinct from new.subtotal
+      or old.discount is distinct from new.discount
+      or old.shipping_cost is distinct from new.shipping_cost
+      or old.total is distinct from new.total
+      or old.payment_method is distinct from new.payment_method
+      or old.payment_status is distinct from new.payment_status then
+      raise exception 'financial fields are server-managed';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists reject_untrusted_order_financial_changes on orders;
+create trigger reject_untrusted_order_financial_changes before update on orders
+for each row execute function public.reject_untrusted_financial_changes();
+drop trigger if exists reject_untrusted_payment_changes on payments;
+create trigger reject_untrusted_payment_changes before insert or update or delete on payments
+for each row execute function public.reject_untrusted_financial_changes();
 
 -- =============================================================================
 -- Fim do schema. Próximo passo: rode `npm run seed` para popular dados fictícios.
