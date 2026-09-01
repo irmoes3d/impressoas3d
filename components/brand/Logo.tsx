@@ -11,11 +11,11 @@ interface LogoProps {
 export function Logo({ size = 44, className = "", href = "/", priority = false }: LogoProps) {
   const image = (
     <Image
-      src="/brand/logo.png"
+      src="/brand/logo-dt-selected-refined-v1.png"
       alt="2 Irmãos Impressões 3D"
       width={size}
       height={size}
-      priority={priority}
+      preload={priority}
       className="shrink-0 rounded-xl object-contain"
     />
   );
