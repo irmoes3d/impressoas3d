@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGlow4" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#0a1a36" stop-opacity="0.95"/>
+      <stop offset="50%" stop-color="#050a14" stop-opacity="0.98"/>
+      <stop offset="100%" stop-color="#020306" stop-opacity="1"/>
+    </radialGradient>
+
+    <!-- Chrome Metallic Gradients -->
+    <linearGradient id="chromeV4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="25%" stop-color="#cbd5e1"/>
+      <stop offset="50%" stop-color="#64748b"/>
+      <stop offset="75%" stop-color="#f1f5f9"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+
+    <!-- Neon Cyan & Azure Blue -->
+    <linearGradient id="cyanV4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="40%" stop-color="#00e5ff"/>
+      <stop offset="80%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+
+    <!-- Glow & Shadow Filters -->
+    <filter id="glowV4" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" result="b1"/>
+      <feGaussianBlur stdDeviation="22" result="b2"/>
+      <feMerge>
+        <feMergeNode in="b2"/>
+        <feMergeNode in="b1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="shadowV4" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="16" stdDeviation="22" flood-color="#000000" flood-opacity="0.9"/>
+    </filter>
+  </defs>
+
+  <rect width="1000" height="1000" fill="url(#bgGlow4)"/>
+
+  <!-- ================= HIGH-TECH SHIELD & DT MONOGRAM ================= -->
+  <g transform="translate(500, 395)" filter="url(#shadowV4)">
+    
+    <!-- Outer Shield Bevel Frame -->
+    <polygon points="0,-250 220,-125 220,125 0,250 -220,125 -220,-125" 
+             fill="#040b18" stroke="url(#cyanV4)" stroke-width="5" filter="url(#glowV4)"/>
+    <polygon points="0,-235 205,-115 205,115 0,235 -205,115 -205,-115" 
+             fill="#060f22" stroke="#1e293b" stroke-width="2"/>
+
+    <!-- Subtle circuit tracks inside shield -->
+    <path d="M-180,-100 L-120,-100 L-60,-160 M180,-100 L120,-100 L60,-160" stroke="#00d2ff" stroke-width="1.5" opacity="0.3"/>
+    <circle cx="-60" cy="-160" r="3" fill="#00e5ff" opacity="0.6"/>
+    <circle cx="60" cy="-160" r="3" fill="#00e5ff" opacity="0.6"/>
+
+    <!-- ========= CENTRAL MERGED DT TECH CORE ========= -->
+    <!-- D Structure (Left Side Chrome) -->
+    <path d="M-130,-130 L-20,-130 C45,-130 80,-75 80,0 C80,75 45,130 -20,130 L-130,130 Z" 
+          fill="url(#chromeV4)" stroke="#0f172a" stroke-width="4"/>
+    <path d="M-80,-75 L-20,-75 C20,-75 35,-40 35,0 C35,40 20,75 -20,75 L-80,75 Z" 
+          fill="#060e1e" stroke="#00d2ff" stroke-width="2"/>
+
+    <!-- T Structure (Interlocking Crown & Spine in Neon Cyan) -->
+    <!-- T Top Wing Bar -->
+    <polygon points="-70,-170 140,-170 120,-115 -50,-115" 
+             fill="url(#cyanV4)" stroke="#e0f2fe" stroke-width="2" filter="url(#glowV4)"/>
+    
+    <!-- T Center Vertical Stem (Sharp straight block, NO J) -->
+    <polygon points="-5,-115 45,-115 45,145 -5,145" 
+             fill="url(#cyanV4)" stroke="#0284c7" stroke-width="2"/>
+    <line x1="20" y1="-105" x2="20" y2="135" stroke="#ffffff" stroke-width="3" filter="url(#glowV4)"/>
+
+    <!-- Precision 3D Printer Head & Filament Beam -->
+    <g transform="translate(135, -45)">
+      <polygon points="-16,-40 16,-40 10,-10 -10,-10" fill="url(#chromeV4)" stroke="#000" stroke-width="2"/>
+      <polygon points="-6,-10 6,-10 0,6" fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
+      <line x1="0" y1="6" x2="0" y2="60" stroke="#00ffff" stroke-width="3" filter="url(#glowV4)"/>
+      <circle cx="0" cy="60" r="4" fill="#ffffff" filter="url(#glowV4)"/>
+
+      <!-- 3D Polyhedron Print Item -->
+      <polygon points="0,60 22,72 0,84 -22,72" fill="#38bdf8" stroke="#ffffff" stroke-width="1.5" opacity="0.9"/>
+      <polygon points="-22,72 0,84 0,104 -22,92" fill="#0284c7" stroke="#00e5ff" stroke-width="1.5"/>
+      <polygon points="0,84 22,72 22,92 0,104" fill="#0369a1" stroke="#00e5ff" stroke-width="1.5"/>
+    </g>
+
+    <!-- Diego & Tiago Pill -->
+    <g transform="translate(0, 180)">
+      <rect x="-65" y="-12" width="130" height="24" rx="12" fill="#020813" stroke="#00e5ff" stroke-width="1.5"/>
+      <text x="0" y="5" font-family="'Segoe UI', 'Montserrat', sans-serif" font-weight="900" font-size="12" fill="#38bdf8" text-anchor="middle" letter-spacing="4">TIAGO &amp; DIEGO</text>
+    </g>
+  </g>
+
+  <!-- ================= TYPOGRAPHY ================= -->
+  <g transform="translate(500, 755)" text-anchor="middle" filter="url(#shadowV4)">
+    <!-- 2 IRMÃOS -->
+    <text x="0" y="0" font-family="'Segoe UI', 'Montserrat', 'Arial Black', sans-serif" font-weight="900" font-size="82" letter-spacing="8">
+      <tspan fill="url(#chromeV4)" stroke="#000" stroke-width="3">2 IRMÃOS</tspan>
+    </text>
+    <text x="0" y="0" font-family="'Segoe UI', 'Montserrat', 'Arial Black', sans-serif" font-weight="900" font-size="82" letter-spacing="8" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.6">
+      2 IRMÃOS
+    </text>
+
+    <!-- IMPRESSÃO 3D with Tech Accent -->
+    <g transform="translate(0, 32)">
+      <line x1="-380" y1="0" x2="-180" y2="0" stroke="url(#cyanV4)" stroke-width="4" filter="url(#glowV4)"/>
+      <polygon points="-185,-5 -175,0 -185,5" fill="#ffffff" filter="url(#glowV4)"/>
+      
+      <text x="0" y="12" font-family="'Segoe UI', 'Montserrat', sans-serif" font-weight="900" font-size="34" fill="#00e5ff" letter-spacing="14" filter="url(#glowV4)">
+        IMPRESSÃO 3D
+      </text>
+      
+      <polygon points="185,-5 175,0 185,5" fill="#ffffff" filter="url(#glowV4)"/>
+      <line x1="180" y1="0" x2="380" y2="0" stroke="url(#cyanV4)" stroke-width="4" filter="url(#glowV4)"/>
+    </g>
+
+    <!-- Values -->
+    <text x="0" y="90" font-family="'Segoe UI', 'Montserrat', sans-serif" font-weight="600" font-size="18" fill="#94a3b8" letter-spacing="10">
+      CRIATIVIDADE <tspan fill="#00d2ff">•</tspan> INOVAÇÃO <tspan fill="#00d2ff">•</tspan> REALIZAÇÃO
+    </text>
+  </g>
+</svg>
+

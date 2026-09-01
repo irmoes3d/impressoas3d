@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGlow2" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#081830" stop-opacity="0.95"/>
+      <stop offset="50%" stop-color="#050a14" stop-opacity="0.98"/>
+      <stop offset="100%" stop-color="#010204" stop-opacity="1"/>
+    </radialGradient>
+
+    <!-- Chrome Metallic Gradients -->
+    <linearGradient id="silverChrome" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="20%" stop-color="#e2e8f0"/>
+      <stop offset="45%" stop-color="#94a3b8"/>
+      <stop offset="50%" stop-color="#cbd5e1"/>
+      <stop offset="80%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#475569"/>
+    </linearGradient>
+
+    <linearGradient id="silverDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <!-- Neon Cyan / Blue Gradients -->
+    <linearGradient id="neonElectric" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="40%" stop-color="#00d2ff"/>
+      <stop offset="80%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+
+    <!-- Glow & Shadow Filters -->
+    <filter id="glowCyan2" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur1"/>
+      <feGaussianBlur stdDeviation="18" result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="shadow3D" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#000000" flood-opacity="0.9"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="1000" fill="url(#bgGlow2)"/>
+
+  <!-- Radial Cyber Tech Ring behind emblem -->
+  <circle cx="500" cy="400" r="230" stroke="#00d2ff" stroke-width="1.5" stroke-dasharray="8 6" opacity="0.2"/>
+  <circle cx="500" cy="400" r="250" stroke="#38bdf8" stroke-width="0.7" opacity="0.1"/>
+
+  <!-- ================= TD MONOGRAM EMBLEM ================= -->
+  <g transform="translate(500, 395)" filter="url(#shadow3D)">
+    
+    <!-- Outer Shield / Bracket Shapes -->
+    <path d="M-190,-160 L-230,-110 L-230,110 L-190,160" stroke="url(#neonElectric)" stroke-width="5" fill="none" opacity="0.7" filter="url(#glowCyan2)"/>
+    <path d="M190,-160 L230,-110 L230,110 L190,160" stroke="url(#neonElectric)" stroke-width="5" fill="none" opacity="0.7" filter="url(#glowCyan2)"/>
+
+    <!-- ========= LETTER 'T' (METALLIC CHROME - TIAGO) ========= -->
+    <!-- T Top Bar Shadow / Extrusion -->
+    <path d="M-150,-155 L60,-155 L60,-95 L-150,-95 Z" fill="url(#silverDark)"/>
+    
+    <!-- T Top Bar Face -->
+    <polygon points="-160,-165 70,-165 50,-105 -140,-105" fill="url(#silverChrome)" stroke="#ffffff" stroke-width="1"/>
+    
+    <!-- T Vertical Stem Shadow -->
+    <path d="M-75,-95 L-15,-95 L-15,160 L-75,160 Z" fill="url(#silverDark)"/>
+    
+    <!-- T Vertical Stem Face (Pure straight vertical bar, NO hook) -->
+    <polygon points="-85,-105 -25,-105 -25,150 -85,150" fill="url(#silverChrome)" stroke="#cbd5e1" stroke-width="1"/>
+    
+    <!-- T Bevel Highlights -->
+    <line x1="-160" y1="-165" x2="70" y2="-165" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <line x1="-85" y1="-105" x2="-85" y2="150" stroke="#ffffff" stroke-width="2.5"/>
+
+    <!-- ========= LETTER 'D' (ELECTRIC NEON CYAN - DIEGO) ========= -->
+    <!-- D wraps boldly from top-right to bottom-right, distinct and sharp -->
+    <!-- D Back/Bevel -->
+    <path d="M0,-105 L70,-105 C150,-105 190,-40 190,25 C190,90 150,150 70,150 L0,150 Z" 
+          fill="#034e7b" opacity="0.6"/>
+
+    <!-- D Main Front Shape (Neon Cyan) -->
+    <path d="M-10,-95 L75,-95 C145,-95 180,-35 180,25 C180,85 145,140 75,140 L-10,140 Z" 
+          fill="url(#neonElectric)" stroke="#38bdf8" stroke-width="3"/>
+
+    <!-- D Inner Hole -->
+    <path d="M45,-45 L75,-45 C110,-45 125,-15 125,25 C125,65 110,90 75,90 L45,90 Z" 
+          fill="#050c18" stroke="#00d2ff" stroke-width="2"/>
+
+    <!-- D Neon Glow Lines (Layer lines effect) -->
+    <path d="M-5,-70 L70,-70 C125,-70 155,-25 155,25 C155,75 125,115 70,115 L-5,115" 
+          fill="none" stroke="#e0f2fe" stroke-width="2.5" opacity="0.8" filter="url(#glowCyan2)"/>
+    
+    <!-- 3D Print Layer Lines inside D -->
+    <line x1="50" y1="-20" x2="110" y2="-20" stroke="#7dd3fc" stroke-width="1.5" opacity="0.7"/>
+    <line x1="50" y1="0" x2="120" y2="0" stroke="#7dd3fc" stroke-width="1.5" opacity="0.7"/>
+    <line x1="50" y1="20" x2="120" y2="20" stroke="#7dd3fc" stroke-width="1.5" opacity="0.7"/>
+    <line x1="50" y1="40" x2="120" y2="40" stroke="#7dd3fc" stroke-width="1.5" opacity="0.7"/>
+    <line x1="50" y1="60" x2="110" y2="60" stroke="#7dd3fc" stroke-width="1.5" opacity="0.7"/>
+
+    <!-- ========= 3D PRINTER HEAD NOZZLE ASSEMBLY ========= -->
+    <g transform="translate(180, -90)">
+      <!-- Printhead block -->
+      <polygon points="-20,-45 20,-45 15,-15 -15,-15" fill="url(#silverChrome)" stroke="#000" stroke-width="2"/>
+      <!-- Gold/Brass Nozzle -->
+      <polygon points="-8,-15 8,-15 0,0" fill="#f59e0b" stroke="#d97706" stroke-width="1"/>
+      
+      <!-- Cyan Laser Extrusion Line -->
+      <line x1="0" y1="0" x2="0" y2="45" stroke="#00e5ff" stroke-width="3" filter="url(#glowCyan2)"/>
+      <circle cx="0" cy="45" r="4" fill="#ffffff" filter="url(#glowCyan2)"/>
+    </g>
+
+    <!-- Sub-tag "T • D" -->
+    <rect x="-50" y="175" width="100" height="26" rx="13" fill="#040a14" stroke="#00d2ff" stroke-width="2"/>
+    <text x="0" y="193" font-family="'Segoe UI', 'Montserrat', sans-serif" font-weight="900" font-size="14" fill="#38bdf8" text-anchor="middle" letter-spacing="6">T • D</text>
+  </g>
+
+  <!-- ================= TYPOGRAPHY ================= -->
+  <g transform="translate(500, 755)" text-anchor="middle" filter="url(#shadow3D)">
+    
+    <!-- 2 IRMÃOS -->
+    <text x="0" y="0" font-family="'Segoe UI', 'Montserrat', 'Arial Black', sans-serif" font-weight="900" font-size="82" letter-spacing="8">
+      <tspan fill="url(#silverChrome)" stroke="#000" stroke-width="3">2 IRMÃOS</tspan>
+    </text>
+    <text x="0" y="0" font-family="'Segoe UI', 'Montserrat', 'Arial Black', sans-serif" font-weight="900" font-size="82" letter-spacing="8" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.6">
+      2 IRMÃOS
+    </text>
+
+    <!-- IMPRESSÃO 3D with Tech Accent -->
+    <g transform="translate(0, 32)">
+      <line x1="-380" y1="0" x2="-180" y2="0" stroke="url(#neonElectric)" stroke-width="4" filter="url(#glowCyan2)"/>
+      <polygon points="-185,-5 -175,0 -185,5" fill="#ffffff" filter="url(#glowCyan2)"/>
+      
+      <text x="0" y="12" font-family="'Segoe UI', 'Montserrat', sans-serif" font-weight="900" font-size="34" fill="#00e5ff" letter-spacing="14" filter="url(#glowCyan2)">
+        IMPRESSÃO 3D
+      </text>
+      
+      <polygon points="185,-5 175,0 185,5" fill="#ffffff" filter="url(#glowCyan2)"/>
+      <line x1="180" y1="0" x2="380" y2="0" stroke="url(#neonElectric)" stroke-width="4" filter="url(#glowCyan2)"/>
+    </g>
+
+    <!-- Values -->
+    <text x="0" y="90" font-family="'Segoe UI', 'Montserrat', sans-serif" font-weight="600" font-size="18" fill="#94a3b8" letter-spacing="10">
+      CRIATIVIDADE <tspan fill="#00d2ff">•</tspan> INOVAÇÃO <tspan fill="#00d2ff">•</tspan> REALIZAÇÃO
+    </text>
+  </g>
+</svg>
+
