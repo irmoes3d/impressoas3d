@@ -4,6 +4,8 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, PackageSearch, Truck } from "lucide-react";
 import { getStoredOrder } from "@/lib/orders-store";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { mapOrderRow, type OrderRow } from "@/lib/orders/mapOrderRow";
 import type { Order } from "@/lib/types";
 import { OrderTimeline } from "@/components/order/OrderTimeline";
 import { DesignApprovalPanel } from "@/components/order/DesignApprovalPanel";
@@ -17,7 +19,20 @@ export default function OrderTrackingPage({ params }: { params: Promise<{ id: st
   const [order, setOrder] = useState<Order | null | undefined>(undefined);
 
   useEffect(() => {
-    setOrder(getStoredOrder(id) ?? null);
+    let active = true;
+    async function load() {
+      const supabase = createSupabaseBrowserClient();
+      const { data } = await supabase.from("orders").select("*, order_items(*)").eq("id", id).maybeSingle();
+      if (!active) return;
+      // Pedidos de visitantes (sem login) não passam pelo RLS sem sessão; nesse
+      // caso usamos o cache local gravado no checkout (lib/actions/orders.ts +
+      // saveStoredOrder) para mostrar a confirmação mesmo assim.
+      setOrder(data ? mapOrderRow(data as OrderRow) : (getStoredOrder(id) ?? null));
+    }
+    load();
+    return () => {
+      active = false;
+    };
   }, [id]);
 
   if (order === undefined) return null;

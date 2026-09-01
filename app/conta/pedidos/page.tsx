@@ -1,23 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Package } from "lucide-react";
-import { getStoredOrders } from "@/lib/orders-store";
-import type { Order } from "@/lib/types";
+import { Loader2, Package } from "lucide-react";
+import { useMyOrders } from "@/lib/customer/useMyOrders";
 import { formatBRL, formatDate } from "@/lib/format";
 import { PRODUCTION_STATUS_LABEL } from "@/lib/types";
 
 export default function PedidosPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const { orders, loading } = useMyOrders();
 
-  useEffect(() => setOrders(getStoredOrders()), []);
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-graphite-200 p-10 text-sm text-graphite-400">
+        <Loader2 size={16} className="animate-spin" /> Carregando pedidos...
+      </div>
+    );
+  }
 
   if (orders.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-graphite-200 p-10 text-center">
         <Package className="mx-auto mb-3 text-graphite-300" size={32} />
-        <p className="text-sm text-graphite-500">Você ainda não fez nenhum pedido nesta demonstração.</p>
+        <p className="text-sm text-graphite-500">Você ainda não fez nenhum pedido.</p>
         <Link href="/produtos" className="mt-3 inline-block text-sm font-semibold text-accent">Ver produtos →</Link>
       </div>
     );
