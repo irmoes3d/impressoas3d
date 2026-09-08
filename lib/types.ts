@@ -231,6 +231,14 @@ export interface Order {
 
 export type QuoteStatus = "novo" | "em_analise" | "orcamento_enviado" | "aprovado" | "recusado";
 
+export type QuoteServiceType = "impressao_3d" | "corte_laser" | "trofeus_personalizados";
+
+export const QUOTE_SERVICE_LABEL: Record<QuoteServiceType, string> = {
+  impressao_3d: "Impressão 3D",
+  corte_laser: "Corte a laser",
+  trofeus_personalizados: "Troféus personalizados",
+};
+
 export interface QuoteFile {
   id: UUID;
   name: string;
@@ -240,6 +248,7 @@ export interface QuoteFile {
 
 export interface CustomQuote {
   id: UUID;
+  serviceType: QuoteServiceType;
   name: string;
   whatsapp: string;
   email: string;

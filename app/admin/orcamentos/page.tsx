@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { FileText, Paperclip } from "lucide-react";
 import { useAllQuotes } from "@/lib/admin/useAllQuotes";
-import type { CustomQuote, QuoteStatus } from "@/lib/types";
+import { QUOTE_SERVICE_LABEL, type CustomQuote, type QuoteStatus } from "@/lib/types";
 import { formatBRL, formatDate } from "@/lib/format";
 import { Modal } from "@/components/admin/Modal";
 import { StatusPill } from "@/components/admin/StatusPill";
@@ -70,6 +70,7 @@ export default function AdminOrcamentosPage() {
                 <StatusPill label={STATUS_LABEL[q.status]} tone={STATUS_TONE[q.status]} />
               </div>
               <p className="mt-1 line-clamp-1 text-sm text-graphite-500">{q.description}</p>
+              <p className="mt-1 text-xs font-semibold text-accent">{QUOTE_SERVICE_LABEL[q.serviceType]}</p>
               <p className="mt-1 flex items-center gap-3 text-xs text-graphite-400">
                 {formatDate(q.createdAt.slice(0, 10))}
                 {q.files.length > 0 && <span className="flex items-center gap-1"><Paperclip size={11} /> {q.files.length}</span>}
@@ -90,6 +91,7 @@ export default function AdminOrcamentosPage() {
           <div className="space-y-4 text-sm">
             <p className="text-graphite-600">{selected.description}</p>
             <div className="grid grid-cols-2 gap-3 text-xs text-graphite-500">
+              <p className="col-span-2"><strong className="text-ink">Serviço:</strong> {QUOTE_SERVICE_LABEL[selected.serviceType]}</p>
               <p><strong className="text-ink">WhatsApp:</strong> {selected.whatsapp}</p>
               <p><strong className="text-ink">E-mail:</strong> {selected.email}</p>
               <p><strong className="text-ink">Quantidade:</strong> {selected.quantity}</p>

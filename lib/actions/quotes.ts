@@ -1,6 +1,7 @@
 "use server";
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { QuoteServiceType } from "@/lib/types";
 
 export interface QuoteFormState {
   ok: boolean;
@@ -12,15 +13,18 @@ export async function submitCustomQuote(formData: FormData): Promise<QuoteFormSt
   const whatsapp = String(formData.get("whatsapp") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
+  const serviceType = String(formData.get("serviceType") ?? "") as QuoteServiceType;
+  const validServiceTypes: QuoteServiceType[] = ["impressao_3d", "corte_laser", "trofeus_personalizados"];
 
-  if (!name || !whatsapp || !email || !description) {
-    return { ok: false, error: "Preencha nome, WhatsApp, e-mail e a descrição do projeto." };
+  if (!name || !whatsapp || !email || !description || !validServiceTypes.includes(serviceType)) {
+    return { ok: false, error: "Preencha seus dados, escolha o tipo de serviço e descreva o projeto." };
   }
 
   const payload = {
     name,
     whatsapp,
     email,
+    service_type: serviceType,
     description,
     quantity: Number(formData.get("quantity") ?? 1),
     approx_size: String(formData.get("approxSize") ?? ""),

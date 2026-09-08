@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 import { getStoredQuotes } from "@/lib/quotes-store";
-import type { CustomQuote } from "@/lib/types";
+import { QUOTE_SERVICE_LABEL, type CustomQuote } from "@/lib/types";
 import { formatDate } from "@/lib/format";
 
 const STATUS_LABEL: Record<CustomQuote["status"], string> = {
@@ -38,6 +38,7 @@ export default function OrcamentosPage() {
             <p className="font-display text-sm font-semibold text-ink">{formatDate(q.createdAt.slice(0, 10))}</p>
             <span className="rounded-full bg-accent-100 px-2.5 py-1 text-[11px] font-semibold text-accent">{STATUS_LABEL[q.status]}</span>
           </div>
+          <p className="mt-2 text-xs font-semibold text-accent">{QUOTE_SERVICE_LABEL[q.serviceType ?? "impressao_3d"]}</p>
           <p className="mt-2 line-clamp-2 text-sm text-graphite-600">{q.description}</p>
           {q.files.length > 0 && <p className="mt-1 text-xs text-graphite-400">{q.files.length} arquivo(s) anexado(s)</p>}
         </div>

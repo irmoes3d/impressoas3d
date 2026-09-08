@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { CheckCircle2, Upload, X } from "lucide-react";
+import { Box, Scissors, Trophy, CheckCircle2, Upload, X } from "lucide-react";
 import { submitCustomQuote, type QuoteFormState } from "@/lib/actions/quotes";
 import { saveStoredQuote } from "@/lib/quotes-store";
 
@@ -15,6 +15,7 @@ export function CustomProjectForm() {
     if (result.ok) {
       saveStoredQuote({
         id: crypto.randomUUID(),
+        serviceType: String(formData.get("serviceType") ?? "impressao_3d") as "impressao_3d" | "corte_laser" | "trofeus_personalizados",
         name: String(formData.get("name") ?? ""),
         whatsapp: String(formData.get("whatsapp") ?? ""),
         email: String(formData.get("email") ?? ""),
@@ -67,6 +68,26 @@ export function CustomProjectForm() {
         <Field label="WhatsApp" name="whatsapp" required placeholder="(11) 99999-9999" />
       </div>
       <Field label="E-mail" name="email" type="email" required placeholder="voce@email.com" />
+
+      <fieldset>
+        <legend className="mb-2 block text-xs font-semibold uppercase tracking-wide text-graphite-400">
+          O que você deseja fabricar?
+        </legend>
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
+            { value: "impressao_3d", label: "Impressão 3D", icon: Box },
+            { value: "corte_laser", label: "Corte a laser", icon: Scissors },
+            { value: "trofeus_personalizados", label: "Troféus personalizados", icon: Trophy },
+          ].map(({ value, label, icon: Icon }) => (
+            <label key={value} className="cursor-pointer">
+              <input className="peer sr-only" type="radio" name="serviceType" value={value} required />
+              <span className="flex h-full items-center gap-2 rounded-xl border border-graphite-200 px-3 py-3 text-sm font-medium text-graphite-600 transition hover:border-accent peer-checked:border-accent peer-checked:bg-accent-50 peer-checked:text-accent peer-focus-visible:ring-2 peer-focus-visible:ring-accent/40">
+                <Icon size={18} className="shrink-0" /> {label}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <div>
         <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-graphite-400">

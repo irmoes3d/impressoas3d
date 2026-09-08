@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Paperclip, Sparkles } from "lucide-react";
 import { useAllQuotes } from "@/lib/admin/useAllQuotes";
-import type { CustomQuote } from "@/lib/types";
+import { QUOTE_SERVICE_LABEL, type CustomQuote } from "@/lib/types";
 import { formatDate } from "@/lib/format";
 
 export default function ProjetosPersonalizadosPage() {
@@ -39,6 +39,7 @@ export default function ProjetosPersonalizadosPage() {
           {incoming.map((q) => (
             <div key={q.id} className="rounded-2xl border border-graphite-100 bg-white p-5">
               <p className="font-display text-sm font-semibold text-ink">{q.name}</p>
+              <p className="mt-1 text-xs font-semibold text-accent">{QUOTE_SERVICE_LABEL[q.serviceType]}</p>
               <p className="text-xs text-graphite-400">{q.whatsapp} · {formatDate(q.createdAt.slice(0, 10))}</p>
               <p className="mt-2 line-clamp-3 text-sm text-graphite-600">{q.description}</p>
               {q.files.length > 0 && (

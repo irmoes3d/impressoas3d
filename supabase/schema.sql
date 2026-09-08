@@ -305,6 +305,7 @@ create table if not exists custom_quotes (
   name text not null,
   whatsapp text not null,
   email text not null,
+  service_type text not null default 'impressao_3d' check (service_type in ('impressao_3d', 'corte_laser', 'trofeus_personalizados')),
   description text not null,
   quantity int not null default 1,
   approx_size text,
